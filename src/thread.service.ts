@@ -12,8 +12,8 @@ class ThreadService {
   constructor() {
     this.browser = null;
     this.endpoint = {
-      url: "ws://localhost:3000",
-      token: "6R0W53R135510",
+      url: process.env.BROWSERLESS_URL || "ws://localhost:3000",
+      token: process.env.BROWSERLESS_TOKEN || "6R0W53R135510",
     };
     this.execTimeLimit = 1800000;
   }
