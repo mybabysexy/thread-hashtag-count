@@ -1,0 +1,21 @@
+{
+  "dependencies": {
+    "puppeteer": "^23.10.0"
+  },
+  "name": "thread-hashtag-count",
+  "version": "1.0.0",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsc -w"
+  },
+  "devDependencies": {
+    "typescript": "^4.0.0"
+  }
+}
