@@ -12,7 +12,7 @@ npm install
 
 ## Usage
 
-Save your Thread cookies and save it to `thread-cookies.json`.
+Save your Thread cookies and save it to `thread-cookies.json`. You can use [this extension](https://chromewebstore.google.com/detail/export-cookie-json-file-f/nmckokihipjgplolmcmjakknndddifde) to make things easier.
 
 Import the module and call the function with the correct Thread hashtag url:
 
