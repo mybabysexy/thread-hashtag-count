@@ -1,6 +1,6 @@
 import puppeteer, { LaunchOptions, Browser, Page } from "puppeteer";
 import fs from "fs";
-import { BrowserlessEndpoint, InitOptions, PostData } from "./types";
+import { BrowserlessEndpoint, InitOptions, PostData } from "./types.js";
 
 class ThreadService {
   protected browser: Browser | null;
@@ -71,7 +71,6 @@ class ThreadService {
     await page.goto(this.url);
     await page.waitForSelector(".x78zum5.xdt5ytf");
 
-    const LIMIT = 100;
     const startTime = Date.now();
 
     let lastHeight = 0;
@@ -143,7 +142,7 @@ class ThreadService {
 
         data.push(...items);
         data = data.filter(
-          (v, i, a) => a.findIndex((t) => t.id === v.id) === i
+          (v, i, a) => a.findIndex((t: PostData) => t.id === v.id) === i
         );
 
         console.log("total raw", data.length);
@@ -155,7 +154,7 @@ class ThreadService {
           return height;
         });
       } while (
-        data.length <= LIMIT &&
+        data.length <= this.totalItemsLimit &&
         Date.now() - startTime < this.execTimeLimit
       );
     } catch (e: Error | unknown) {

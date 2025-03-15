@@ -1,5 +1,6 @@
-import ThreadService from "./thread.service";
+import ThreadService from "./thread.service.js";
 import fs from "fs";
+import { PostData } from './types.js';
 
 const thread = new ThreadService();
 try {
@@ -12,7 +13,7 @@ try {
 
   // filter unique id
   const uniqueData = data.filter(
-    (v, i, a) => a.findIndex((t) => t.id === v.id) === i
+    (v, i, a) => a.findIndex((t: PostData) => t.id === v.id) === i
   );
 
   console.log("Total posts:", uniqueData.length);
