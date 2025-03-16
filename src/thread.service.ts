@@ -8,6 +8,7 @@ class ThreadService {
   protected execTimeLimit: number = 1800000;
   protected totalItemsLimit: number = 100;
   protected url: string = "";
+  protected includeKeywords: string[] = [];
 
   constructor() {
     this.browser = null;
@@ -29,8 +30,13 @@ class ThreadService {
       this.totalItemsLimit = options.totalItemsLimit;
     }
 
+    if (options.includeKeywords && options.includeKeywords.length > 0) {
+      this.includeKeywords = options.includeKeywords;
+    }
+
     const launchArgs: LaunchOptions = {
-      args: [`--window-size=1920,1080`, `--user-data-dir=/tmp/chrome/data-dir`],
+      args: [`--window-size=1920,1080`,
+             `--user-data-dir=${process.platform === 'win32' ? 'C:\\temp\\chrome\\data-dir' : '/tmp/chrome/data-dir'}`],
       headless: false,
       timeout: this.execTimeLimit + 5000, // add 5s
     };
@@ -56,9 +62,13 @@ class ThreadService {
       return;
     }
 
-    const file = "thread-cookies.json";
+    const file = "www.threads.net.cookies.json";
     const cookies = JSON.parse(fs.readFileSync(file, "utf-8"));
     await this.browser.setCookie(...cookies);
+  }
+
+  async sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   async getPosts(page: Page): Promise<PostData[]> {
@@ -79,6 +89,9 @@ class ThreadService {
 
     console.time("totalFetch");
 
+    let tries = 0;
+    const maxTries = 5;
+
     try {
       do {
         await page.waitForFunction(
@@ -86,7 +99,8 @@ class ThreadService {
           { timeout: 60000 }
         );
 
-        const items: PostData[] = await page.evaluate((tagId) => {
+        const includeKeywords = this.includeKeywords;
+        const items: PostData[] = await page.evaluate(({ tagId, includeKeywords }) => {
           const wrapper = document
             .querySelectorAll(
               "#barcelona-page-layout .x78zum5.xdt5ytf.x1iyjqo2.x1n2onr6"
@@ -116,6 +130,24 @@ class ThreadService {
               }
             }
 
+            let content = el.querySelector('.x1a6qonq')?.textContent || "";
+            if (includeKeywords.length > 0) {
+              const hasKeyword = includeKeywords.some((keyword) =>
+                content.toLowerCase().includes(keyword)
+              );
+
+              if (!hasKeyword) {
+                return null;
+              }
+            }
+            content = content.replace(/[\r\n]+/g, " ");
+            // remove nbsp
+            content = content.replace(/&nbsp;/g, " ");
+            // remove extra spaces
+            content = content.replace(/\s+/g, " ");
+            // escape content for csv
+            content = `\"${content}\"`;
+
             const interactions = el.querySelectorAll(
               ".x17qophe.x10l6tqk.x13vifvy"
             );
@@ -127,17 +159,27 @@ class ThreadService {
               id,
               time,
               link,
+              content,
               likes,
               comments,
               reposts,
             };
           });
           return results.filter((i) => i !== null) as PostData[];
-        }, tagId);
+        }, { tagId, includeKeywords });
 
         if (!items.length) {
-          console.log("no more items");
-          break;
+          console.log("no more items, retrying...");
+          if (tries >= maxTries) {
+            console.log("max tries reached");
+            break;
+          }
+          tries++;
+          console.log("tries", tries);
+          await this.sleep(5000);
+          continue;
+        } else {
+          tries = 0;
         }
 
         data.push(...items);
@@ -177,6 +219,7 @@ class ThreadService {
     const header: (keyof PostData)[] = [
       "time",
       "link",
+      "content",
       "likes",
       "comments",
       "reposts",

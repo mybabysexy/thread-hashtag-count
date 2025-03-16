@@ -90,4 +90,4 @@ public/
 .history/
 
 .idea/
-*-cookies.json
+*cookies.json
