@@ -1,0 +1,56 @@
+{
+  "manifest_version": 3,
+  "name": "Thread Hashtag Counter",
+  "description": "Count posts with specific hashtag on Threads.",
+  "version": "1.1.0",
+  "author": "duc1607",
+  "homepage_url": "https://duc1607.me",
+  "icons": {
+    "16": "logo/logo-16.png",
+    "48": "logo/logo-48.png",
+    "128": "logo/logo-128.png"
+  },
+  "action": {
+    "default_title": "Thread Hashtag Counter"
+  },
+  "permissions": [
+    "sidePanel",
+    "storage",
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": [
+    "*://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "foreground.js",
+        "sidebar/assets/index.js"
+      ],
+      "matches": [
+        "https://www.threads.net/*"
+      ]
+    }
+  ],
+  "side_panel": {
+    "default_path": "sidebar/index.html"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "sidebar/thread-logo.svg"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "minimum_chrome_version": "88"
+}
