@@ -33,7 +33,7 @@ export const AppContextProvider: FC<{ children: ReactNode }> = ({ children }) =>
         if (url) {
             const urlInfo = new URL(url);
             const hostname = urlInfo.hostname;
-            if (hostname === 'threads.net' || hostname === 'www.threads.net') {
+            if (hostname === 'threads.com' || hostname === 'www.threads.com') {
                 const queryParams = new URLSearchParams(urlInfo.search);
                 const {
                     q,

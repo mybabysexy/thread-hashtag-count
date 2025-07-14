@@ -145,8 +145,8 @@ const Welcome = () => {
         if (initSuccess) {
             if (limit && parseInt(limit) > 0) {
                 const limitNumber = parseInt(limit);
-                if (limitNumber > 5000) {
-                    alert('Giới hạn tối đa là 5000');
+                if (limitNumber > 10000) {
+                    alert('Giới hạn tối đa là 10000');
                     return;
                 }
             }
